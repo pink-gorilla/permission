@@ -28,7 +28,7 @@ jobs:
       env:
         CLOJARS_USERNAME: ${{ secrets.ReleaseUsername }}
         CLOJARS_PASSWORD: ${{ secrets.ReleasePassword }}
-      run: |
+      run: 
         git config --global user.email "ci@pinkgorilla.org"
 	git config --global user.name "CI/CD"
 	clojure -T:build jar
