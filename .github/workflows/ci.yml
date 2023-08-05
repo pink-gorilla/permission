@@ -30,6 +30,6 @@ jobs:
         CLOJARS_PASSWORD: ${{ secrets.ReleasePassword }}
       run: |
         git config --global user.email "ci@pinkgorilla.org"
-	git config --global user.name "CI/CD"
-	clojure -T:build jar
-	clojure -T:build deploy
+        git config --global user.name "CI/CD"
+        clojure -T:build jar
+        clojure -T:build deploy
