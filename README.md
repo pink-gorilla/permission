@@ -17,6 +17,25 @@ You need to set this in your config
 
 ```
 (modular.permission.service/add-permissioned-services 
-   {:time/now-date #{} 
-    :time/local nil})
+   {:time nil
+    :get-orders #{} 
+    :transfer-money #{:management})
+	
+(modular.permission.service/service-authorized?	
+   :time nil)
+-> yes, because time does not need user to be logged in   
+
+(modular.permission.service/service-authorized?	
+   :get-orders nil)
+-> no, because :get-orders need user to be logged in 
+
+(modular.permission.service/service-authorized?	
+   :get-orders :florian)
+-> yes, because :get-orders need user to be logged in, and :florian is logged in
+
+(modular.permission.service/service-authorized?	
+   :transfer-money :florian)
+-> no, because :transfer-mone needs :management role
+
+
 ```
