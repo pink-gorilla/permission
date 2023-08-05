@@ -25,7 +25,6 @@ jobs:
         cli: 1.10.3.1029 # Clojure CLI based on tools.deps
     - name: deploy to clojars
       if: success()
-      # if: github.event_name == 'push'
       env:
         CLOJARS_USERNAME: ${{ secrets.ReleaseUsername }}
         CLOJARS_PASSWORD: ${{ secrets.ReleasePassword }}
@@ -34,4 +33,4 @@ jobs:
         git config --global user.email "ci@pinkgorilla.org"
         git config --global user.name "CI/CD"
         clojure -T:build jar
-	clojure -T:build deploy      
+	clojure -T:build deploy
