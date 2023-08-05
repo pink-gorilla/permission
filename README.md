@@ -15,3 +15,8 @@ You need to set this in your config
 				 :email []}}}
 ```
 
+```
+(modular.permission.service/add-permissioned-services 
+   {:time/now-date #{} 
+    :time/local nil})
+```
