@@ -28,9 +28,8 @@ jobs:
       env:
         CLOJARS_USERNAME: ${{ secrets.ReleaseUsername }}
         CLOJARS_PASSWORD: ${{ secrets.ReleasePassword }}
-        CODECOV_TOKEN: ${{ secrets.CodecovToken }}
       run: |
         git config --global user.email "ci@pinkgorilla.org"
-        git config --global user.name "CI/CD"
-        clojure -T:build jar
+	git config --global user.name "CI/CD"
+	clojure -T:build jar
 	clojure -T:build deploy
