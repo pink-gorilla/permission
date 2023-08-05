@@ -33,3 +33,4 @@ jobs:
 	git config --global user.name "CI/CD"
 	clojure -T:build jar
 	clojure -T:build deploy
+      #  finished
