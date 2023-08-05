@@ -4,6 +4,13 @@
 
 Permission Management
 
+It is used to check if a user is permissioned for a service.
+A service can be a http route or a websocket message type.
+
+It checks if user has a role that is required for a service.
+
+nil means unknown user, or no permission needed.
+
 
 You need to set this in your config
 ```
