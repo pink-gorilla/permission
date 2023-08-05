@@ -13,10 +13,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: Use Node.js 12.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.x
     - name: Prepare java
       uses: actions/setup-java@v2
       with:
@@ -27,11 +23,7 @@ jobs:
       uses: DeLaGuardo/setup-clojure@3.5
       with:
         cli: 1.10.3.1029 # Clojure CLI based on tools.deps
-    - name: Install Babashka
-      run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
-    - name: bb ci-check
-      run: bb ci-check
-    - name: bb ci-deploy
+    - name: deploy to clojars
       if: success()
       # if: github.event_name == 'push'
       env:
@@ -41,12 +33,5 @@ jobs:
       run: |
         git config --global user.email "ci@pinkgorilla.org"
         git config --global user.name "CI/CD"
-        bb ci-deploy
-      # bash <(curl -s https://codecov.io/bash)
-      # lein with-profile +relay-jetty cloverage
-      #  bash <(curl -s https://codecov.io/bash) -f target/coverage/codecov.json
-      #
-      # Could not transfer metadata foo:bar/maven-metadata.xml from/to releases (https://clojars.org/repo): Read timed out
-      # Default 10000 not enough for us
-      # export LEIN_JVM_OPTS="-Dmaven.wagon.rto=90000"
-      
+        clojure -T:build jar
+	clojure -T:build deploy      

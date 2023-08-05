@@ -13,7 +13,7 @@
 
 (defn jar "build the JAR" [opts]
   (println "Building the JAR")
-  (spit (doto (fs/file "resources/META-INF/pink-gorilla/webly/meta.edn")
+  (spit (doto (fs/file "resources/META-INF/pink-gorilla/webly2/meta.edn")
           (-> fs/parent fs/create-dirs)) {:module-name "permission"
                                           :version version})
   (-> opts
