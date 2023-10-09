@@ -1,8 +1,8 @@
-# Weblypermission [![GitHub Actions status |pink-gorilla/permission](https://github.com/pink-gorilla/permission/workflows/CI/badge.svg)](https://github.com/pink-gorilla/permission/actions?workflow=CI)[![Clojars Project](https://img.shields.io/clojars/v/org.pinkgorilla/permission.svg)](https://clojars.org/org.pinkgorilla/permission)
+# permission [![GitHub Actions status |pink-gorilla/permission](https://github.com/pink-gorilla/permission/workflows/CI/badge.svg)](https://github.com/pink-gorilla/permission/actions?workflow=CI)[![Clojars Project](https://img.shields.io/clojars/v/org.pinkgorilla/permission.svg)](https://clojars.org/org.pinkgorilla/permission)
 
 **End Users** this project is not for you.
 
-Permission Management
+## Permission Management
 
 It is used to check if a user is permissioned for a service.
 A service can be a http route or a websocket message type.
