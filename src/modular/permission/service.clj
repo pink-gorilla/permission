@@ -1,54 +1,45 @@
 (ns modular.permission.service
   (:require
-   [taoensso.timbre :as timbre :refer [debug info warn error]]
-   [modular.permission.user :refer [get-user]]
-   [modular.permission.role :as role] ))
+   [modular.permission.user :refer [get-user get-user-roles]]
+   [modular.permission.role :as role]))
 
-
-(def permissioned-services (atom {}))
-
-(defn add-permissioned-services [perm-table]
+(defn add-permissioned-services [{:keys [services] :as _this} permissioned-services]
+  (assert (map? permissioned-services))
   ; {:time/now-date #{} 
   ;  :time/local nil}
-  (debug "add permissioned services: " (keys perm-table))
-  (swap! permissioned-services merge perm-table)
-  (debug "permissioned table: " @permissioned-services)
-  )
+  (swap! services merge permissioned-services))
 
-(defn has-permission-for-service [service-kw-or-symbol]
-  (contains? @permissioned-services service-kw-or-symbol))
+(defn has-permission-for-service [{:keys [services] :as _this} service-kw-or-symbol]
+  (contains? @services service-kw-or-symbol))
 
-(defn required-permission-for-service [service-kw-or-symbol]
-  (get @permissioned-services service-kw-or-symbol))
+(defn required-permission-for-service [{:keys [services] :as _this} service-kw-or-symbol]
+  (get @services service-kw-or-symbol))
 
-(defn service-authorized? [service-kw user-id]
-  (debug "service-authorized? service: " service-kw " user-id: " user-id)
-  (let [user (get-user user-id)
-        has-permission? (has-permission-for-service service-kw)
-        required-roles (required-permission-for-service service-kw)
+(defn service-authorized? [this service-kw-or-symbol user-id]
+  (let [user (get-user this user-id)
+        has-permission? (has-permission-for-service this service-kw-or-symbol)
+        required-roles (required-permission-for-service this service-kw-or-symbol)
+        user-roles (get-user-roles this user-id)
         a? (if (and user has-permission?)
-             (role/authorized? required-roles user-id)
+             (role/authorized-roles? required-roles user-roles)
              false)]
     (cond
       (not has-permission?)
-      (do (error "service-authorized? " service-kw " - no permission entry! - please define permissions for this service!")
-          false)
-      
+      false ; service has no permission entry.
+
       (nil? required-roles)
       true  ; if the service does not require anything, then authorized.
-      
+
       (not user)
-      (do (warn "service-authorized? " service-kw " - user unknown: " user-id)
-          false)
+      false
 
       a?
       true
 
       (not a?)
-      (do (warn "service-authorized? " service-kw " - not permissioned for user: " user-id)
-          false)
+      false ; user lacks permission for service
 
       :else ; should not happen, just to be safe.
       false)))
-      
-      
+
+

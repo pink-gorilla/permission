@@ -1,53 +1,42 @@
-(ns modular.permission.user
-  (:require
-   [taoensso.timbre :as timbre :refer [debug info error]]
-   [clojure.pprint :refer [print-table]]
-   [modular.config :refer [get-in-config]]))
+(ns modular.permission.user)
 
-; :florian {:roles #{:logistic}
-;           :password "xxxxxxxx" 
-;           :email ["hoertlehner@gmail.com"]}
+(defn- add-user [[user-id {:keys [roles email] :as user}]]
+  (assert (keyword user-id))
+  (assert (set? roles))
+  [user-id (assoc user
+                  :id user-id
+                  :email (or email [])
+                  :roles roles)])
 
+(defn- add-user-ids [users]
+  (->> users
+       (map add-user) ; seq of [id user]
+       (into {})))
 
-(defn user-db []
-  (if-let [users (get-in-config [:users])]
-    users
-    (do (error "cannot get user-db, please add [:users] in config!")
-        nil)))
+(defn set-users! [{:keys [users] :as _this} new-users]
+  (reset! users (add-user-ids new-users)))
 
-(defn users-count []
-  (let [users (user-db)]
-    (if users
-      (-> users keys count)
-      0)))
+(defn get-user [{:keys [users] :as _this} user-id]
+  ;(println "get-user: " user-id "users: " @users)
+  (get @users user-id))
 
-(defn get-user [user-id]
-  (when-let [users (user-db)]
-    (when-let [user (get users user-id)]
-      (assoc user :id user-id))))
-
-(defn get-user-list []
-  (map get-user (keys (user-db))))
+(defn get-user-roles [this user-id]
+  (if-let [user (get-user this user-id)]
+    (if-let [roles (:roles user)]
+      roles
+      #{})
+    #{}))
 
 ; find user by email
 
-(defn- user-email [[user-id {:keys [email]}]]
-  {:user-id user-id
-   :email email})
+(defn- has-email? [email]
+  (fn [user]
+    (let [emails (or (:email user) [])]
+      (some #(= email %) emails))))
 
-(defn find-user-id-via-email [email]
-  (if-let [users (user-db)]
-    (let [user-email-list (map user-email users)
-          contains-email (fn [user]
-                           (some #(= email %) (:email user)))
-          _ (debug "user-email-list: " (pr-str user-email-list))
-          m (-> (filter contains-email user-email-list)
-                first)]
-      (:user-id m))
-    nil))
-
-
-(defn print-users []
-  (->> (get-user-list)
-       (print-table [:id :roles :email])))
+(defn find-user-id-via-email [{:keys [users] :as _this} email]
+  (->> @users
+       (filter (has-email? email))
+       first
+       :id))
 
