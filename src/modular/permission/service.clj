@@ -3,6 +3,9 @@
    [modular.permission.user :refer [get-user get-user-roles]]
    [modular.permission.role :as role]))
 
+(defn add-permissioned-service [{:keys [services] :as _this} service-kw-or-symbol required-permission]
+  (swap! services assoc service-kw-or-symbol required-permission)) 
+
 (defn add-permissioned-services [{:keys [services] :as _this} permissioned-services]
   (assert (map? permissioned-services))
   ; {:time/now-date #{} 

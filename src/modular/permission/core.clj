@@ -2,8 +2,7 @@
   (:require
    [modular.permission.user :as user]
    [modular.permission.session :as session]
-   [modular.permission.service :as service]
-   ))
+   [modular.permission.service :as service]))
 
 (defn permission-active? [{:keys [users] :as _this}]
   (and (map? @users) (seq @users)))
@@ -22,8 +21,8 @@
 
 (defn user-authorized? [this service-kw-or-symbol user-id]
   (if (permission-active? this)
-     (service/service-authorized? this service-kw-or-symbol user-id)
-     true))
+    (service/service-authorized? this service-kw-or-symbol user-id)
+    true))
 
 (defn session-authorized? [this service-kw-or-symbol session-id]
   (if (permission-active? this)
