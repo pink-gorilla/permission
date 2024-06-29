@@ -25,7 +25,7 @@
     (if-let [roles (:roles user)]
       roles
       #{})
-    #{}))
+    nil))
 
 ; find user by email
 
@@ -36,6 +36,7 @@
 
 (defn find-user-id-via-email [{:keys [users] :as _this} email]
   (->> @users
+       vals
        (filter (has-email? email))
        first
        :id))
