@@ -12,6 +12,7 @@
    services need to be added separately.
    An empty map means permission checks are disabled."
   [users]
+  (assert (map? users)  "arg users needs to be a map")
   (let [this {:users (atom {})
               :services (atom {})
               :sessions (atom {})}]
