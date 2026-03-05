@@ -5,8 +5,8 @@
 
 (deftest roles
   (testing "user-has-role"
-    (is (true? (role/user-has-role #{:logistic :admin} :admin))
-        (is (false? (role/user-has-role #{:logistic :admin} :management)))))
+    (is (true? (role/user-has-role #{:logistic :admin} :admin)))
+    (is (false? (role/user-has-role #{:logistic :admin} :management))))
   (testing "authorized-roles"
     (is (true? (role/authorized-roles? nil #{}))) ; true = route does not need roles
     (is (true? (role/authorized-roles? nil #{:admin}))) ; true = route does not need roles
