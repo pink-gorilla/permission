@@ -1,46 +1,23 @@
 (ns user-test
   (:require
+   [clojure.edn :as edn]
+   [clojure.java.io :as io]
    [clojure.test :refer :all]
    [modular.permission.core :refer [start-permissions]]
    [modular.permission.user :as user]
-   [modular.permission.role :as role]))
+   [modular.permission.user.atom :as user-atom]))
 
-(def this (start-permissions
-           {:demo {:roles #{:admin :logistic}
-                   :password "a231498f6c1f441aa98482ea0b224ffa" ; "1234"
-                   :email ["john@doe.com"]}
-            :awb99 {:roles #{:management :admin}
-                    :password "a231498f6c1f441aa98482ea0b224ffa" ; "1234"
-                    :email ["awb99@gmail.com"]}}))
+(def users
+  (-> "users.edn" io/resource slurp edn/read-string))
+
+(def this
+  (start-permissions (user-atom/create-user-manager users)))
 
 (deftest user
-  (testing "get-user"
-    (is (= {:roles #{:admin :logistic}
-            :id :demo
-            :password "a231498f6c1f441aa98482ea0b224ffa" ; "1234"
-            :email ["john@doe.com"]}
-           (user/get-user this :demo))))
-  #_(testing "get-user-roles"
-      (is (= (user/get-user-roles this :awb99)
-             #{:management :admin})))
-  #_(testing "find-user by email"
-      (is (= (:id (user/find-user-id-via-email this "awb99@gmail.com"))
-             :awb99))))
-
-#_(deftest user-roles
-    (testing "user-roles"
-      (is (true? (role/authorized-roles? #{:admin} :demo))) ; demo has admin role => true
-      (is (false? (role/authorized-roles?  #{:accounting} :demo))) ; demo does not have accouting role => false
-      (is (false? (role/authorized-roles?  #{:accounting :management} :demo))) ; demo does not have accouting role => false
-      (is (true? (role/authorized-roles?  #{:accounting :logistic} :demo))) ; demo does not logistic role => true
-      (is (false? (role/authorized-roles?  #{:admin} :hacker)))  ; hacker has no roles
-      (is (false? (role/authorized-roles?  #{:admin} nil)))))  ; not logged in user has no roles
-
-
-
-
-
-
-
-
-
+  (let [um (:user-manager this)]
+    (testing "get-user"
+      (is (= (first users) (user/get-user um "demo"))))
+    (testing "get-user-roles"
+      (is (= #{:management :admin} (user/get-user-roles um "awb99"))))
+    (testing "find-user by email"
+      (is (= "awb99" (user/find-user-id-via-email um "awb99@gmail.com"))))))

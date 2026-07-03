@@ -1,24 +1,21 @@
 (ns modular.permission.core
   (:require
-   [modular.permission.user :as user]
    [modular.permission.session :as session]
    [modular.permission.service :as service]))
 
-(defn permission-active? [{:keys [users] :as _this}]
-  (and (map? @users) (seq @users)))
+(defn permission-active? [{:keys [user-manager] :as _this}]
+  (some? user-manager))
 
 (defn start-permissions
-  "starts a permission manager with the specified users.
-   services need to be added separately.
-   An empty map means permission checks are disabled."
-  [users]
-  (assert (map? users)  "arg users needs to be a map")
-  (let [this {:users (atom {})
-              :services (atom {})
-              :sessions (atom {})}]
-    (user/set-users! this users)
-    ;(println "state : " this)
-    this))
+  "Starts a permission manager with the specified user-manager.
+   Services need to be added separately.
+   Pass nil to disable permission checks."
+  ([]
+   (start-permissions nil))
+  ([user-manager]
+   {:user-manager user-manager
+    :services (atom {})
+    :sessions (atom {})}))
 
 (defn user-authorized? [this service-kw-or-symbol user-id]
   (if (permission-active? this)
@@ -29,4 +26,3 @@
   (if (permission-active? this)
     (session/service-authorized? this service-kw-or-symbol session-id)
     true))
-

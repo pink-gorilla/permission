@@ -11,38 +11,54 @@ It checks if user has a role that is required for a service.
 
 nil means unknown user, or no permission needed.
 
-
-You need to set this in your config
-```
-{:users {:florian {:roles #{:logistic}
-                   :password "xxxxxxxx" 
-                   :email ["andreas.wolfgang.bauer@gmail.com"]}
-         :david {:roles #{}
-		         :password "xxxxxx"
-				 :email []}}}
-```
+User data is provided via a `Users` protocol implementation (`modular.permission.user.atom` or `modular.permission.user.datahike`).
 
 ```
-(modular.permission.service/add-permissioned-services 
-   {:time nil
-    :get-orders #{} 
-    :transfer-money #{:management})
-	
-(modular.permission.service/service-authorized?	
-   :time nil)
--> yes, because time does not need user to be logged in   
+(def users
+  [{:user/name "florian"
+    :user/password "xxxxxxxx"
+    :user/email ["andreas.wolfgang.bauer@gmail.com"]
+    :user/roles #{:logistic}}
+   {:user/name "david"
+    :user/password "xxxxxx"
+    :user/email []
+    :user/roles #{}}])
 
-(modular.permission.service/service-authorized?	
-   :get-orders nil)
--> no, because :get-orders need user to be logged in 
+(def permissions
+  (modular.permission.core/start-permissions
+    (modular.permission.user.atom/create-user-manager users)))
+```
 
-(modular.permission.service/service-authorized?	
-   :get-orders :florian)
--> yes, because :get-orders need user to be logged in, and :florian is logged in
+Pass `nil` to `start-permissions` to disable permission checks.
 
-(modular.permission.service/service-authorized?	
-   :transfer-money :florian)
--> no, because :transfer-mone needs :management role
+```
+(modular.permission.service/add-permissioned-services
+ permissions
+ {:time nil
+  :get-orders #{}
+  :transfer-money #{:management}})
 
+(modular.permission.service/service-authorized?
+ permissions
+ :time
+ nil)
+-> yes, because time does not need user to be logged in
 
+(modular.permission.service/service-authorized?
+ permissions
+ :get-orders
+ nil)
+-> no, because :get-orders need user to be logged in
+
+(modular.permission.service/service-authorized?
+ permissions
+ :get-orders
+ "florian")
+-> yes, because :get-orders need user to be logged in, and florian is logged in
+
+(modular.permission.service/service-authorized?
+ permissions
+ :transfer-money
+ "florian")
+-> no, because :transfer-money needs :management role
 ```

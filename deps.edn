@@ -1,12 +1,13 @@
 {:paths ["src"]
- :deps {org.clojure/clojure    {:mvn/version "1.11.1"}}
+ :deps {org.clojure/clojure    {:mvn/version "1.11.1"}
+        org.replikativ/datahike {:mvn/version "0.8.1671"}}
  :aliases {:build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
                           slipset/deps-deploy {:mvn/version "0.2.1"}
                           babashka/fs {:mvn/version "0.0.5"}}
                    :ns-default build}
 
            :test
-           {:extra-paths ["test"]
+           {:extra-paths ["test" "test/resources"]
             :extra-deps {io.github.cognitect-labs/test-runner
                          {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
             :exec-fn cognitect.test-runner.api/test}

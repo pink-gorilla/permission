@@ -1,0 +1,8 @@
+[{:user/name "demo"
+  :user/password "a231498f6c1f441aa98482ea0b224ffa"
+  :user/email ["john@doe.com"]
+  :user/roles #{:admin :logistic}}
+ {:user/name "awb99"
+  :user/password "a231498f6c1f441aa98482ea0b224ffa"
+  :user/email ["awb99@gmail.com"]
+  :user/roles #{:management :admin}}]
